@@ -2,12 +2,14 @@
 
 class Config:
 
-    HIDDEN_DIM = 128
+    HIDDEN_DIM = 1024
     LATENT_DIM = 2
     WINDOW_SIZW = 8
 
-    ADV_POOL_SEEN = ['PolicyN', 'PolicyNW', 'PolicyW', 'PolicySW']
-    ADV_POOL_UNSEEN = ['PolicyNE','PolicySE', 'PolicyE', 'PolicyS']
+    # ADV_POOL_SEEN = ['PolicyN', 'PolicyNW', 'PolicyW', 'PolicySW']
+    ADV_POOL_SEEN = ['PolicyN', 'PolicyS', 'PolicyW']  # 'PolicyE'
+    # ADV_POOL_UNSEEN = ['PolicyNE','PolicySE', 'PolicyE', 'PolicyS']
+    ADV_POOL_UNSEEN = ['PolicyNW','PolicySW', 'PolicyNE', 'PolicySE']
     ADV_POOL_MIX = ADV_POOL_SEEN + ADV_POOL_UNSEEN
 
     DATA_DIR = '../data/'
