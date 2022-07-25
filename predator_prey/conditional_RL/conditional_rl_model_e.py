@@ -5,7 +5,7 @@ import torch.optim as optim
 from torch.distributions import Categorical
 from torch.utils.data.sampler import BatchSampler, SubsetRandomSampler
 import numpy as np
-from embedding_learning.opponent_models import *
+from embedding_learning.opponent_models_e import *
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
@@ -48,24 +48,25 @@ class ValueNet(torch.nn.Module):
         return self.fc4(x)
 
 
-class PPO_VAE():
+class PPO_E():
     clip_param = 0.2
     max_grad_norm = 0.5
     ppo_update_time = 20
     buffer_capacity = 1000
     batch_size = 1000
 
-    def __init__(self, state_dim, hidden_dim, embedding_dim, action_dim, actor_lr, critic_lr, encoder_weight_path, gamma, n_adv_pool=4):
-        super(PPO_VAE, self).__init__()
+    def __init__(self, state_dim, hidden_dim, embedding_dim, action_dim, actor_lr, critic_lr, encoder_weight_path, gamma, encoder_input_dim):
+        super(PPO_E, self).__init__()
 
         self.hidden_dim = hidden_dim 
         self.actor_net = PolicyNet(state_dim, self.hidden_dim, embedding_dim, action_dim).to(device)
         self.critic_net = ValueNet(state_dim, self.hidden_dim, embedding_dim).to(device)
 
-        # EncoderVAE
-        self.encoder = EncoderVAE(n_adv_pool, hidden_dim, embedding_dim).to(device)
+        # Encoder
+        self.encoder = Encoder(encoder_input_dim, hidden_dim, embedding_dim).to(device)
         print("encoder weight loaded")
         self.encoder.load_state_dict(torch.load(encoder_weight_path))
+        self.encoder.eval()
 
         self.buffer = []
         self.counter = 0
@@ -94,11 +95,15 @@ class PPO_VAE():
     
     def save_params(self, ckp):
         save_dict = {'agent_params': self.get_params()}
-        torch.save(save_dict, '../model_params/RL/params_' + str(ckp) + '.pt', _use_new_zipfile_serialization=False)
+        torch.save(save_dict, '../model_params/RL/params_' + str(ckp) + '.pt'
+                    #, _use_new_zipfile_serialization=False
+                    )
     
     def save_params_with_path(self, path):
         save_dict = {'agent_params': self.get_params()}
-        torch.save(save_dict, path, _use_new_zipfile_serialization=False)
+        torch.save(save_dict, path
+                    #, _use_new_zipfile_serialization=False
+                    )
         
     def init_from_save(self, filename):
         save_dict = torch.load(filename)
@@ -108,8 +113,7 @@ class PPO_VAE():
         self.buffer.append(transition)
         self.counter += 1
     
-    def update(self, i_ep):
-        state = torch.tensor([t.state for t in self.buffer], dtype=torch.float).to(device)
+    def update(self):
         action = torch.tensor([t.action for t in self.buffer], dtype=torch.long).view(-1,1).to(device)
         latent = torch.tensor([t.latent for t in self.buffer], dtype=torch.float).to(device)
 
