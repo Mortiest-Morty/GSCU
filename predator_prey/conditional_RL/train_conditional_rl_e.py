@@ -171,7 +171,7 @@ def main(args):
                 result_dict['test_list_vae'] = test_return_list
                 result_dict['settings'] = settings
 
-                pickle.dump(result_dict, open(result_dir+'return_' + exp_id + '.p', "wb"))
+                pickle.dump(result_dict, open(result_dir+'return_crl_' + exp_id + '.p', "wb"))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=None)
