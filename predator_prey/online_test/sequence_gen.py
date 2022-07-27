@@ -3,13 +3,10 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 import numpy as np
 
 import pickle
-import torch
-
 
 N_OPP = 3
 SEQ_LEN = 1000
 
-device = 'cuda' if torch.cuda.is_available() else 'cpu'
 policy_vec_seq = []
 adv_type_seq = []
 

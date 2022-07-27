@@ -2,3 +2,4 @@ __pycache__
 predator_prey/data
 predator_prey/model_params
 results
+.DS_Store
