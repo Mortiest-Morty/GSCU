@@ -19,5 +19,5 @@ for i in range(SEQ_LEN):
 
 result_dict = {}
 result_dict['policy_vec_seq'] = policy_vec_seq
-pickle.dump(result_dict, open('policy_vec_sequence_' + str(N_OPP) + '.p', "wb"))
+pickle.dump(result_dict, open('policy_vec_seq_' + str(N_OPP) + '.p', "wb"))
 

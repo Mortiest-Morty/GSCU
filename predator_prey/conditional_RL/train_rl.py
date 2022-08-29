@@ -10,7 +10,7 @@ from multiagent.environment import MultiAgentEnv
 from multiagent.mypolicy import *
 import multiagent.scenarios as scenarios
 from embedding_learning.data_generation_e import get_all_adv_policies
-from conditional_RL.ppo_model import PPO
+from conditional_RL.ppo_model_e import PPO
 from utils.multiple_test import play_multiple_times_train
 from utils.config_predator_prey import Config
 

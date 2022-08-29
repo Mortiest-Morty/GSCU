@@ -78,8 +78,8 @@ def main(args):
     env_e.seed(seed)
     np.random.seed(seed)
     
-    state_dim = env_e.observation_space[env_e.n-1].shape[0]
-    action_dim = env_e.action_space[env_e.n-1].n
+    state_dim = env_e.observation_space[env_e.n-1].shape[0]  # 16
+    action_dim = env_e.action_space[env_e.n-1].n  # 5
     # print("action_dim:", action_dim)
     # sys.exit()
     embedding_dim = Config.LATENT_DIM
@@ -122,7 +122,7 @@ def main(args):
                 act_n_e = []
 
                 for j, policy in enumerate(policies_e):
-                    act_e = policy.action(obs_n_e[j])
+                    act_e = policy.action(obs_n_e[j])  # act_e: [7]
                     act_n_e.append(act_e)
                     temp_tau[j].append(obs_n_e[j])
                     temp_tau[j].append(act_e)
@@ -145,7 +145,7 @@ def main(args):
 
                 episode_return_e += reward_n_e[3]
                 obs_n_e = next_obs_n_e
-                act_traj.append(act[:-2])
+                act_traj.append(act[:-2])  # act: [7]
 
             return_list.append(episode_return_e)
 
