@@ -55,6 +55,8 @@ def main(args):
     data_dir = Config.DATA_DIR
     if not os.path.exists(rst_dir):
         os.makedirs(rst_dir, exist_ok=False)
+    
+    offline_data_dir = data_dir + 'e_data_simple_tag_' + args.version + '.p'
 
     if adv_pool_type == 'mix':
         dataloader = open(data_dir+'policy_vec_seq_8.p', 'rb')
@@ -103,7 +105,7 @@ def main(args):
     all_policies_pi = get_three_adv_all_policies(env_pi, selected_adv_pool)
     all_policies_e = get_three_adv_all_policies(env_e, selected_adv_pool)
     
-    det = Detector()
+    Det = Detector(offline_data_dir, agent_e.encoder, len(seen_adv_pool))
 
     cur_adv_idx = 300 # just a random number to identify the sequence start point. can be any number between 0 to 800
     cur_n_opponent = 0
@@ -120,15 +122,16 @@ def main(args):
             policy_vec = policy_vec_seq[cur_adv_idx]
             for j in range(N_ADV):
                 adv_idx = np.argmax(policy_vec)
-                policies_pi.append(all_policies_pi[j][adv_idx])
+                policies_pi.append(all_policies_pi[j][adv_idx])  # 0～2 oppos are the same
                 policies_e.append(all_policies_e[j][adv_idx])
             opp_name = selected_adv_pool[adv_idx]
+        if i_episode == 0:
             tau_vec = np.zeros((N_ADV, encoder_input_dim))
         else:
             for j in range(N_ADV):
                 tau_vec[j, :] = np.concatenate(temp_tau[j])
         
-        selected_pos_idx = np.random.randint(0, N_ADV)
+        selected_pos_idx = np.random.randint(0, N_ADV)  # randomly sample a position and encode its traj
         temp_tau = [[] for _ in range(N_ADV)]
         
         episode_return_pi = 0
@@ -181,6 +184,14 @@ def main(args):
             obs_n_e = next_obs_n_e
             act_traj_e.append(act_e[:-2])
 
+        Det.add_adv_traj(np.concatenate(temp_tau[selected_pos_idx]))
+        if (i_episode+1) % Det.detect_step == 0:
+            is_unseen = Det.detect()
+            if is_unseen:
+                pass  # TODO: online fine-tuning
+        
+        # TODO: detection accuracy
+        
         return_list_e.append(episode_return_e)
         return_list_pi.append(episode_return_pi)
 

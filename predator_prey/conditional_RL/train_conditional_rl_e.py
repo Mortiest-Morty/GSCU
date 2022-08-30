@@ -102,12 +102,14 @@ def main(args):
                 selected_adv_idx = np.random.randint(0, n_adv_pool)
                 for j in range(N_ADV):
                     policies_e.append(all_policies_e[j][selected_adv_idx])
+                
+            if i == 0 and i_episode == 0:  # ! should train again
                 tau_vec = np.zeros((N_ADV, encoder_input_dim))
             else:
                 for j in range(N_ADV):
                     tau_vec[j, :] = np.concatenate(temp_tau[j])
             
-            selected_pos_idx = np.random.randint(0, N_ADV)
+            selected_pos_idx = np.random.randint(0, N_ADV)  # randomly sample a position and encode its traj
             temp_tau = [[] for _ in range(N_ADV)]
             
             episode_return_e = 0
