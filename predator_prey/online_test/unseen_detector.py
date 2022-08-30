@@ -2,8 +2,7 @@ from pandas import pd
 import numpy as np
 import torch 
 
-# device = 'cuda' if torch.cuda.is_available() else 'cpu'
-device = 'mps'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class Detector:
     def __init__(self, data_file, encoder, num_seen, detect_step=50):

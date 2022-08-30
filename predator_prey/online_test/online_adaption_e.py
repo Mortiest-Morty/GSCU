@@ -24,8 +24,7 @@ N_ADV = 3
 seen_adv_pool = Config.ADV_POOL_SEEN
 unseen_adv_pool =  Config.ADV_POOL_UNSEEN
 mix_adv_pool = Config.ADV_POOL_MIX
-# device = 'cuda' if torch.cuda.is_available() else 'cpu'
-device = 'mps'
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def get_three_adv_all_policies(env, adv_pool):
     all_policies_idx0 = get_all_adv_policies(env,adv_pool,agent_index=0)
