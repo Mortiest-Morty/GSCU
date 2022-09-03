@@ -9,7 +9,7 @@ class Config:
     # ADV_POOL_SEEN = ['PolicyN', 'PolicyNW', 'PolicyW', 'PolicySW']
     ADV_POOL_SEEN = ['PolicyN', 'PolicyS', 'PolicyW']  # 'PolicyE'
     # ADV_POOL_UNSEEN = ['PolicyNE','PolicySE', 'PolicyE', 'PolicyS']
-    ADV_POOL_UNSEEN = ['PolicyNW','PolicySW', 'PolicyNE', 'PolicySE']
+    ADV_POOL_UNSEEN = ['PolicyE', 'PolicyNW','PolicySW', 'PolicyNE', 'PolicySE']
     ADV_POOL_MIX = ADV_POOL_SEEN + ADV_POOL_UNSEEN
 
     DATA_DIR = '../data/'

@@ -72,7 +72,7 @@ def main(args):
     # policy parameters of opponents from the seen pool
     sample_p1 = Config.SAMPLE_P1_SEEN
 
-    device = torch.device("cpu")
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     gamma = 0.99
     actor_lr = 5e-4 

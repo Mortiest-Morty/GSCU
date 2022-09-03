@@ -17,7 +17,7 @@ from itertools import count
 import argparse
 import time
 
-device = torch.device("cpu")
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 class PolicyNet(torch.nn.Module):
     def __init__(self, state_dim, hidden_dim, action_dim):

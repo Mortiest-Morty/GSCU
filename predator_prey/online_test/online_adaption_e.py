@@ -88,7 +88,7 @@ def main(args):
     encoder_weight_path = args.encoder_file
 
     agent_e = PPO_E(state_dim + action_dim, hidden_dim, embedding_dim, action_dim, actor_lr, critic_lr, encoder_weight_path, gamma, encoder_input_dim)
-    agent_pi = PPO(state_dim, hidden_dim, action_dim, 0.0, 0.0, gamma)
+    agent_pi = PPO(state_dim, 128, action_dim, 0.0, 0.0, gamma)
     ppo_e_path = args.rl_file
     ppo_pi_path = '../model_params/RL/params_pi.pt'
     agent_e.init_from_save(ppo_e_path)
@@ -124,6 +124,10 @@ def main(args):
                 policies_pi.append(all_policies_pi[j][adv_idx])  # 0～2 oppos are the same
                 policies_e.append(all_policies_e[j][adv_idx])
             opp_name = selected_adv_pool[adv_idx]
+            # print("1_i_episode:", i_episode)
+            # print("1_cur_adv_idx:", cur_adv_idx)
+            # print("adv_idx:", adv_idx)
+            # print("opp_name:", opp_name)
         if i_episode == 0:
             tau_vec = np.zeros((N_ADV, encoder_input_dim))
         else:
@@ -185,11 +189,15 @@ def main(args):
 
         Det.add_adv_traj(np.concatenate(temp_tau[selected_pos_idx]))
         if (i_episode+1) % Det.detect_step == 0:
+            label = np.argmax(policy_vec_seq[cur_adv_idx])
+            # print("2_i_episode:", i_episode)
+            # print("2_cur_adv_idx:", cur_adv_idx)
+            # print("label:", label)
+            # print("opp_name:", opp_name)
+            Det.add_adv_label(label)
             is_unseen = Det.detect()
             if is_unseen:
                 pass  # TODO: online fine-tuning
-        
-        # TODO: detection accuracy
         
         return_list_e.append(episode_return_e)
         return_list_pi.append(episode_return_pi)
@@ -203,7 +211,10 @@ def main(args):
                         ', avg ppo_e', np.mean(return_list_e), 
                         '| avg pi', np.mean(return_list_pi))
                 print ('-'*10)
-
+                accuracy, detect_num = Det.cal_accuracy()
+                print("detection accuracy: ", accuracy)
+                print("total # of detection: ", detect_num)
+                print ('-'*10)
                 result_dict = {}
                 result_dict['opponent_type'] = adv_pool_type
                 result_dict['version'] = test_id
@@ -213,7 +224,7 @@ def main(args):
                 pickle.dump(result_dict, open(rst_dir+'online_adaption_'+test_id+'_'+adv_pool_type+'.p', "wb"))
         
         
-        if i_episode % adv_change_freq == 0 and i_episode > 0:
+        if (i_episode+1) % adv_change_freq == 0:
             cur_adv_idx += 1
             cur_n_opponent += 1
 
@@ -233,3 +244,4 @@ if __name__ == '__main__':
     
 
     main(args)
+# nohup python -u online_adaption_e.py -v v6 -o mix -e ../model_params/VAE/encoder_e_param_v6_29.pt -r ../model_params/RL/params_v6_10000.0.pt > online_adaption_detection.log 2>&1 &
